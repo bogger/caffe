@@ -1,0 +1,1 @@
+/home/alex/anaconda/bin/python log_analyzer/server_lite.py models/classitection/log/caffe.INFO --ip=192.168.72.107 --update=30 --msg="Classitection on 107" --train=1 --test=0 --test_acc=0 --test_acc_5=1 --port=10000
