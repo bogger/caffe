@@ -4,12 +4,10 @@ layers {
   type: DATA
   top: "data"
   top: "label"
-  top: "mask_coord"
   data_param {
     source: "examples/mnist/mnist_train_lmdb"
     backend: LMDB
-    batch_size: 32
-    mem_data_source: "/media/ssd/backup/train_bbox_All_max_localization_list.txt"
+    batch_size:64 
   }
   transform_param {
     scale: 0.00390625
