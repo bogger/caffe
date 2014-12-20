@@ -267,6 +267,8 @@ Layer<Dtype>* GetLayer(const LayerParameter& param) {
 	  return new TiledInnerProductLayer<Dtype>(param);
   case LayerParameter_LayerType_TILED_CONVOLUTION:
 	  return new TiledConvolutionLayer<Dtype>(param);
+  case LayerParameter_LayerType_INFLATION:
+	  return new InflationLayer<Dtype>(param);
   case LayerParameter_LayerType_NONE:
     LOG(FATAL) << "Layer " << name << " has unspecified type.";
   default:

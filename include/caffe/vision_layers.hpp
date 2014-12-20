@@ -193,6 +193,7 @@ class Im2colLayer : public Layer<Dtype> {
   int pad_h_, pad_w_;
 };
 
+
 // Forward declare PoolingLayer and SplitLayer for use in LRNLayer.
 template <typename Dtype> class PoolingLayer;
 template <typename Dtype> class SplitLayer;
@@ -455,6 +456,42 @@ class TiledConvolutionLayer : public Layer<Dtype> {
   int NTILE_HEIGHT_;
   int TILE_WIDTH_;
   int TILE_HEIGHT_;
+};
+
+/*
+ * InflationLayer
+ */
+template <typename Dtype>
+class InflationLayer : public Layer<Dtype> {
+ public:
+  explicit InflationLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      vector<Blob<Dtype>*>* top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      vector<Blob<Dtype>*>* top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_INFLATION;
+  }
+  virtual inline int ExactNumBottomBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      vector<Blob<Dtype>*>* top);
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+      vector<Blob<Dtype>*>* top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, vector<Blob<Dtype>*>* bottom);
+  virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, vector<Blob<Dtype>*>* bottom);
+
+  int channels_;
+  int height_, width_;
+
+  int inflate_height_, inflate_width_;
+  int inflate_rate_;
 };
 
 }  // namespace caffe
