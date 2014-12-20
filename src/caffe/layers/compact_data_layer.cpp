@@ -313,6 +313,7 @@ void CompactDataLayer<Dtype>::InternalThreadEntry() {
       key = (char*)mdb_key_.mv_data;
       // datum.ParseFromArray(mdb_value_.mv_data,
       //     mdb_value_.mv_size);
+//      LOG(INFO)<<key;
       break;
     default:
       LOG(FATAL) << "Unknown database backend";

@@ -60,7 +60,10 @@ def select_log_part(raw_logs, part_identifiers=[('Testing','Testing', 4, 2), ('T
                         break
                     if 'loss' in line:
                         if len(loss) <= loss_num:
-                            loss.append(float(floating_numbers[line_index+i][2:]))
+                            try:
+                                loss.append(float(floating_numbers[line_index+i][2:]))
+                            except:
+                                break
 
                     if 'accuracy' in line  or 'accuracy5' in line:
                         if len(acc) <= acc_num:

@@ -11,7 +11,7 @@ layers {
   }
   transform_param {
     crop_size: 224
-    mean_file: "data/ilsvrc12/imagenet_mean_crop.binaryproto"
+    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
     mirror: true
     multiscale: false
   }
@@ -29,7 +29,7 @@ layers {
   }
   transform_param {
     crop_size: 224
-    mean_file: "data/ilsvrc12/imagenet_mean_crop.binaryproto"
+    mean_file: "data/ilsvrc12/imagenet_mean.binaryproto"
     mirror: false
   }
   include: { phase: TEST }

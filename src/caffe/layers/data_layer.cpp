@@ -284,6 +284,7 @@ void DataLayer<Dtype>::InternalThreadEntry() {
       datum.ParseFromArray(mdb_value_.mv_data,
           mdb_value_.mv_size);
       key = (char*)mdb_key_.mv_data;
+//      LOG(INFO)<<key;
 //      LOG(INFO)<<"Read "<<item_id<<" "<<(char*)mdb_key_.mv_data;
       break;
     default:
