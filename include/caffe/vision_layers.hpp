@@ -490,8 +490,10 @@ class InflationLayer : public Layer<Dtype> {
   int channels_;
   int height_, width_;
 
-  int inflate_height_, inflate_width_;
-  int inflate_rate_;
+  int inflate_size_h_, inflate_size_w_;
+  int inflate_rate_h_, inflate_rate_w_;
+  Dtype placeholder_;
+  Dtype scale_;
 };
 
 }  // namespace caffe

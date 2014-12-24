@@ -157,6 +157,49 @@ class XavierFiller : public Filler<Dtype> {
   }
 };
 
+/**
+ * @brief Fill the blob with bilinear filters to intialize the convolution as part of bilinear resampling.
+ */
+template <typename Dtype>
+class BilinearFiller : public Filler<Dtype> {
+ public:
+  explicit BilinearFiller(const FillerParameter& param)
+      : Filler<Dtype>(param) {}
+  virtual void Fill(Blob<Dtype>* blob) {
+//    CHECK(blob->count());
+//    int fan_in = blob->count() / blob->num();
+//    Dtype scale = sqrt(Dtype(3) / fan_in);
+//    caffe_rng_uniform<Dtype>(blob->count(), -scale, scale,
+//        blob->mutable_cpu_data());
+//    CHECK_EQ(this->filler_param_.sparse(), -1)
+//         << "Sparsity not supported by this Filler.";
+	  CHECK(blob->count());
+
+	  //initialize to zeros
+	  Dtype* data = blob->mutable_cpu_data();
+	  caffe_set(blob->count(), Dtype(0.), data);
+
+	  int channels = blob->channels();
+	  int width = blob->width();
+	  int height = blob->height();
+	  int num = blob->num();
+	  CHECK(num==channels)<<"To use bilinear filter, make sure input and output has same numbers of channels";
+
+	  int channel_step = width*height;
+	  int h_center = height/2;
+	  int w_center = width/2;
+
+	  for (int n = 0; n < num; n++){
+		  Dtype* data_ptr = data + n * (channel_step + channels * channel_step);
+		  for (int h = 0; h < height; ++h){
+			  for (int w = 0; w < width; ++w){
+				  data_ptr[h * width + w] = Dtype(((h <= h_center)? h:(height - 1 - h)) * ((w <= w_center)? w:(width - 1 - w)))/Dtype(h_center/w_center);
+			  }
+		  }
+	  }
+  }
+};
+
 
 /**
  * @brief Get a specific filler from the specification given in FillerParameter.
@@ -177,7 +220,9 @@ Filler<Dtype>* GetFiller(const FillerParameter& param) {
     return new UniformFiller<Dtype>(param);
   } else if (type == "xavier") {
     return new XavierFiller<Dtype>(param);
-  } else {
+  } else if (type == "bilinear") {
+	return new BilinearFiller<Dtype>(param);
+  }else {
     CHECK(false) << "Unknown filler name: " << param.type();
   }
   return (Filler<Dtype>*)(NULL);

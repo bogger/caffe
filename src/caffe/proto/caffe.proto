@@ -754,6 +754,8 @@ message InflationParameter {
   optional uint32 inflate_size_w = 3 [default = 0];
   
   optional float placeholder = 4 [default = 0]; // the number placed in the blank cells.
+  
+  optional float scale = 5 [default = 1]; //the scale of upscaled pixels.
 }
 
 
