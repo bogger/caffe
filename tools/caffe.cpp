@@ -104,9 +104,14 @@ int train() {
   if (FLAGS_gpu < 0
         && solver_param.solver_mode() == caffe::SolverParameter_SolverMode_GPU
         ) {
-	  CHECK_EQ(Caffe::mpi_all_rank(), solver_param.device_id_size())
-			  << "incorrect length of device id list";
-	  FLAGS_gpu = solver_param.device_id(Caffe::mpi_self_rank());
+	  if (Caffe::mpi_all_rank() > 1){
+		  CHECK_EQ(Caffe::mpi_all_rank(), solver_param.device_id_size())
+		  			  << "incorrect length of device id list";
+		  FLAGS_gpu = solver_param.device_id(Caffe::mpi_self_rank());
+	  }else{
+		  FLAGS_gpu = (solver_param.device_id_size() > 0)?solver_param.device_id(0):0;
+	  }
+
   }
 #endif
 

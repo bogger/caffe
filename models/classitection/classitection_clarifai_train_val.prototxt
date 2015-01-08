@@ -377,11 +377,119 @@ layers {
   }
   include: { phase: TEST }
 }
+
 layers {
   name: "map_conv1"
   type: CONVOLUTION
-  bottom: "pool5"
+  bottom: "conv5"
   top: "map_conv1"
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 512
+    pad: 3
+    stride: 2
+    kernel_size: 9
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layers {
+  name: "map_relu1"
+  type: RELU
+  bottom: "map_conv1"
+  top: "map_relu1"
+}
+
+
+layers {
+  name: "map_conv1_2"
+  type: CONVOLUTION
+  bottom: "conv5"
+  top: "map_conv1_2"
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 512
+    pad: 1
+    stride: 2
+    kernel_size: 5
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layers {
+  name: "map_relu1_2"
+  type: RELU
+  bottom: "map_conv1_2"
+  top: "map_relu1_2"
+}
+
+
+layers {
+  name: "map_concat1"
+  type: CONCAT
+  bottom: "map_relu1"
+  bottom: "map_relu1_2"
+  #bottom: "map_relu1_3"
+  #bottom: "map_relu1_4"
+  #bottom: "map_relu1_5"
+  top: "map_relu1_all"
+}
+
+layers {
+  name: "map_conv2"
+  type: CONVOLUTION
+  bottom: "map_relu1_all"
+  top: "map_conv2"
+  blobs_lr: 1
+  blobs_lr: 2
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 512
+    pad: 0
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  name: "map_relu2"
+  bottom:"map_conv2"
+  top: "map_conv2"
+  type: RELU
+}
+
+layers {
+  name: "map_conv3"
+  type: CONVOLUTION
+  bottom: "map_conv2"
+  top: "map_conv3"
   blobs_lr: 1
   blobs_lr: 2
   weight_decay: 1
@@ -391,7 +499,8 @@ layers {
     pad: 0
     kernel_size: 1
     weight_filler {
-      type: "xavier"
+      type: "gaussian"
+      std: 0.005
     }
     bias_filler {
       type: "constant"
@@ -402,8 +511,8 @@ layers {
 layers {
   name: "map_sigmoid1"
   type: SIGMOID
-  bottom: "map_conv1"
-  top: "map_conv1"
+  bottom: "map_conv3"
+  top: "map_conv3"
   sigmoid_param: {
     engine: CUDNN
   }
@@ -411,7 +520,7 @@ layers {
 layers {
   name: "map_loss"
   type: EUCLIDEAN_LOSS
-  bottom: "map_conv1"
+  bottom: "map_conv3"
   bottom: "data_map"
   top: "map_loss"
   loss_weight: 0.1

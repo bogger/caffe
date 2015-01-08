@@ -222,7 +222,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 51 (last added: TILED_CONVOLUTION)
+  // LayerType next available ID: 53 (last added: MAP_DATA)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -277,6 +277,7 @@ message LayerParameter {
     TILED_INNERPRODUCT = 49;
     TILED_CONVOLUTION = 50;
     INFLATION = 51;
+    MAP_DATA = 52;
   }
   optional LayerType type = 5; // the layer type from the enum above
 
@@ -337,6 +338,7 @@ message LayerParameter {
   optional TiledInnerProductParameter tiled_inner_product_param = 43;
   optional TiledConvolutionParameter tiled_convolution_param = 44;
   optional InflationParameter inflation_param = 45;
+  optional MapGenerationParameter map_generation_param = 46;
 
   // Parameters for data pre-processing.
   optional TransformationParameter transform_param = 36;
@@ -366,6 +368,7 @@ message TransformationParameter {
   optional string mean_file = 4;
   optional bool multiscale = 5 [default = false];
   optional float offset = 6 [default = 0];
+  optional uint32 random_seed = 7 [default = 0];
 }
 
 // Message that stores parameters used by AccuracyLayer
@@ -756,6 +759,17 @@ message InflationParameter {
   optional float placeholder = 4 [default = 0]; // the number placed in the blank cells.
   
   optional float scale = 5 [default = 1]; //the scale of upscaled pixels.
+}
+
+message MapGenerationParameter {
+  optional uint32 map_size=1 [default = 0];
+  optional uint32 map_size_h = 2 [default = 0];
+  optional uint32 map_size_w = 3 [default = 0];
+  
+  optional float map_channels = 4 [default = 1];
+  optional float map_high = 5 [default = 1];
+  optional float map_low = 6 [default = 0];
+  
 }
 
 

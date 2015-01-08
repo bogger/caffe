@@ -26,7 +26,7 @@ class DataTransformer {
   }
   virtual ~DataTransformer() {}
 
-  void InitRand();
+  void InitRand(int random_seed=0);
   void FillInOffsets(int *w, int *h, int width, int height, int crop_size) {
     FillInOffsets(w, h, width, height, crop_size, crop_size);
     // w[0] = 0; h[0] = 0;
@@ -77,6 +77,8 @@ class DataTransformer {
   void Transform(const int batch_item_id, IplImage *img,
                  const Dtype* mean, Dtype* transformed_data,
                  vector<int>& bbox);
+  void TransformFromCoord(const int batch_item_id, const Datum& datum,
+		  	  	  Dtype* transformed_data , int channels, Dtype high=Dtype(1.), Dtype low=Dtype(0.));
   Caffe::Phase phase_;
  protected:
   virtual unsigned int Rand();

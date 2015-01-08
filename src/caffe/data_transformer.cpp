@@ -320,11 +320,75 @@ void DataTransformer<Dtype>::Transform(const int batch_item_id,
 }
 
 template <typename Dtype>
-void DataTransformer<Dtype>::InitRand() {
+int crop_coords(Dtype coord, int offset, int max_size){
+			return min<int>(max<int>(coord - offset, 0), max_size);
+		}
+
+/*
+ * Generate object map from coordinates data
+ */
+template <typename Dtype>
+void DataTransformer<Dtype>::TransformFromCoord(const int batch_item_id, const Datum& datum,
+		  	  	  Dtype* transformed_data, int channels, Dtype high, Dtype low){
+
+	int crop_size = param_.crop_size();
+
+	if (crop_size){
+		int map_count = crop_size * crop_size * channels;
+
+		caffe_set(map_count, low, transformed_data);
+
+		const int height = datum.height();
+		const int width = datum.width();
+		int w[5], h[5];
+	    FillInOffsets(w, h, width, height, crop_size);
+
+		int h_off, w_off;
+		    // We only do random crop when we do training.
+		if (phase_ == Caffe::TRAIN) {
+		    int r = Rand() % 5;
+		    h_off = h[r];
+		    w_off = w[r];
+		  } else {
+			  h_off = h[4];
+			  w_off = w[4];
+
+		  }
+
+		int box_num = datum.float_data(0);
+
+
+
+		int ptr = 1;
+		for (int i = 0; i < box_num; ++i){
+			int bbox_channel = datum.float_data(ptr);
+			int w_start = crop_coords<Dtype>(datum.float_data(ptr+1), w_off, crop_size);
+			int w_end 	= crop_coords<Dtype>(datum.float_data(ptr+2), w_off, crop_size);
+			int h_start = crop_coords<Dtype>(datum.float_data(ptr+3), h_off, crop_size);
+			int h_end 	= crop_coords<Dtype>(datum.float_data(ptr+4), h_off, crop_size);
+
+			ptr += 5; // offset for next bbox
+
+			Dtype* start_ptr = transformed_data + bbox_channel * crop_size * crop_size;
+
+			for (int w = w_start; w < w_end; ++w){
+				for(int h = h_start; h < h_end; ++h){
+					start_ptr[h * crop_size + w] = high;
+				}
+			}
+
+		}
+	}
+
+}
+
+
+template <typename Dtype>
+void DataTransformer<Dtype>::InitRand(int random_seed) {
   const bool needs_rand = (phase_ == Caffe::TRAIN) &&
       (param_.mirror() || param_.crop_size());
   if (needs_rand) {
-    const unsigned int rng_seed = caffe_rng_rand();
+    const unsigned int rng_seed = (random_seed!=0)?random_seed:caffe_rng_rand();
     rng_.reset(new Caffe::RNG(rng_seed));
   } else {
     rng_.reset();

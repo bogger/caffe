@@ -1,13 +1,13 @@
 name: "AlexNet"
 layers {
   name: "data"
-  type: DATA
+  type: COMPACT_DATA
   top: "data"
   top: "label"
   data_param {
-    source: "examples/imagenet/ilsvrc12_train_lmdb"
+    source: "/media/ssd/caffe-official/examples/imagenet/imagenet_train_compact_lmdb"
     backend: LMDB
-    batch_size: 256
+    batch_size: 128
   }
   transform_param {
     crop_size: 227
@@ -18,11 +18,11 @@ layers {
 }
 layers {
   name: "data"
-  type: DATA
+  type: COMPACT_DATA
   top: "data"
   top: "label"
   data_param {
-    source: "examples/imagenet/ilsvrc12_val_lmdb"
+    source: "/media/ssd/caffe-official/examples/imagenet/imagenet_val_compact_lmdb"
     backend: LMDB
     batch_size: 50
   }

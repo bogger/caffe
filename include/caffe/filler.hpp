@@ -193,7 +193,7 @@ class BilinearFiller : public Filler<Dtype> {
 		  Dtype* data_ptr = data + n * (channel_step + channels * channel_step);
 		  for (int h = 0; h < height; ++h){
 			  for (int w = 0; w < width; ++w){
-				  data_ptr[h * width + w] = Dtype(((h <= h_center)? h:(height - 1 - h)) * ((w <= w_center)? w:(width - 1 - w)))/Dtype(h_center/w_center);
+				  data_ptr[h * width + w] = Dtype(((h <= h_center)? h:(height - 1 - h)) * ((w <= w_center)? w:(width - 1 - w)))/Dtype(h_center*w_center);
 			  }
 		  }
 	  }

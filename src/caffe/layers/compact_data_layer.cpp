@@ -79,7 +79,7 @@ void CompactDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   int w_off = (tmp.width() - crop_size) / 2;
   int h_off = (tmp.height() - crop_size) / 2;
 
-  // Why are we only using the mean of center crop? by Alex
+  // Why are we only using the mean of center crop? - Alex
   for (int c = 0; c < this->datum_channels_; c++) {
     for (int h = 0; h < crop_size; h++) {
       for (int w = 0; w < crop_size; w++) {
@@ -91,7 +91,7 @@ void CompactDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }
 
   this->mean_ = this->data_mean_.cpu_data();
-  this->data_transformer_.InitRand();
+  this->data_transformer_.InitRand(this->transform_param_.random_seed());
 
   this->prefetch_data_.mutable_cpu_data();
   if (this->output_labels_) {
