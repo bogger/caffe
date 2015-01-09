@@ -263,6 +263,7 @@ void MapDataLayer<Dtype>::InternalThreadEntry() {
   CHECK(this->prefetch_data_.count());
   string key;
   Dtype* top_data = this->prefetch_data_.mutable_cpu_data();
+
   Dtype* top_label = NULL;  // suppress warnings about uninitialized variables
   Dtype* top_bbox = NULL;
   vector<int> bbox;
@@ -272,11 +273,13 @@ void MapDataLayer<Dtype>::InternalThreadEntry() {
   }
   const int batch_size = this->layer_param_.data_param().batch_size();
 
+  caffe_set(batch_size * this->map_channels_ * this->prefetch_data_.width() * this->prefetch_data_.height(), this->map_low_, top_data);
+
   int crop_size = this->layer_param_.transform_param().crop_size();
 #ifndef USE_MPI
   for (int item_id = 0; item_id < batch_size; ++item_id) {
 #else
-  for (int item_id = batch_size * Caffe::mpi_self_rank() * (-1); item_id < batch_size * (Caffe::mpi_all_rank() - Caffe::mpi_self_rank()); ++item_id) {
+  for (int item_id = batch_size * Caffe::mpi_self_rank() * (-1); item_id < batch_size * (max(Caffe::mpi_all_rank(),1) - Caffe::mpi_self_rank()); ++item_id) {
 
 	  bool do_read = (item_id>=0) && (item_id<batch_size);
 	if(do_read){
@@ -301,7 +304,6 @@ void MapDataLayer<Dtype>::InternalThreadEntry() {
     default:
       LOG(FATAL) << "Unknown database backend";
     }
-
 
     // Apply data transformations (mirror, scale, crop...)
     this->data_transformer_.TransformFromCoord(item_id, datum, top_data,
@@ -341,6 +343,7 @@ void MapDataLayer<Dtype>::InternalThreadEntry() {
     }
 
   }
+//  exit(-1);
 }
 
 INSTANTIATE_CLASS(MapDataLayer);

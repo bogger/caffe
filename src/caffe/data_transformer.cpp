@@ -40,6 +40,8 @@ void DataTransformer<Dtype>::TransformSingle(const int batch_item_id,
     int r = Rand() % 5;
     h_off = h[r];
     w_off = w[r];
+//    static int _cnt = 0;
+//    LOG(INFO)<<"s "<<_cnt++<<" "<<r;
   } else {
 	  h_off = h[4];
 	  w_off = w[4];
@@ -336,7 +338,7 @@ void DataTransformer<Dtype>::TransformFromCoord(const int batch_item_id, const D
 	if (crop_size){
 		int map_count = crop_size * crop_size * channels;
 
-		caffe_set(map_count, low, transformed_data);
+//		caffe_set(map_count, low, transformed_data);
 
 		const int height = datum.height();
 		const int width = datum.width();
@@ -349,6 +351,8 @@ void DataTransformer<Dtype>::TransformFromCoord(const int batch_item_id, const D
 		    int r = Rand() % 5;
 		    h_off = h[r];
 		    w_off = w[r];
+//		    static int _cnt = 0;
+//		    LOG(INFO)<<_cnt++<<" "<<r;
 		  } else {
 			  h_off = h[4];
 			  w_off = w[4];
@@ -367,17 +371,30 @@ void DataTransformer<Dtype>::TransformFromCoord(const int batch_item_id, const D
 			int h_start = crop_coords<Dtype>(datum.float_data(ptr+3), h_off, crop_size);
 			int h_end 	= crop_coords<Dtype>(datum.float_data(ptr+4), h_off, crop_size);
 
+//			LOG(INFO)<<width<<" "<<height;
+//			LOG(INFO)<<w_off<<" "<<h_off;
+//			LOG(INFO)<<datum.float_data(ptr+1)<<" "<<datum.float_data(ptr+2)<<" "<<datum.float_data(ptr+3)<<" "<<datum.float_data(ptr+4)<<" ";
+//			LOG(INFO)<<w_start<<" "<<w_end<<" "<<h_start<<" "<<h_end<<" ";
+//			LOG(INFO)<<batch_item_id;
+
 			ptr += 5; // offset for next bbox
 
-			Dtype* start_ptr = transformed_data + bbox_channel * crop_size * crop_size;
+			Dtype* start_ptr = transformed_data + (batch_item_id * channels + bbox_channel) * crop_size * crop_size;
 
-			for (int w = w_start; w < w_end; ++w){
-				for(int h = h_start; h < h_end; ++h){
+			for (int h = h_start; h < h_end; ++h){
+				for(int w = w_start; w < w_end; ++w){
 					start_ptr[h * crop_size + w] = high;
+//					LOG(INFO)<<h * crop_size + w;
 				}
 			}
 
 		}
+
+//		LOG(INFO)<<box_num<<" box added";
+//		for (int i = 0; i < channels * crop_size * crop_size; ++i){
+//			LOG(INFO)<<i<<" "<<transformed_data[batch_item_id * channels * crop_size * crop_size + i];
+//		}
+//		exit(0);
 	}
 
 }
@@ -388,6 +405,7 @@ void DataTransformer<Dtype>::InitRand(int random_seed) {
   const bool needs_rand = (phase_ == Caffe::TRAIN) &&
       (param_.mirror() || param_.crop_size());
   if (needs_rand) {
+//	  CHECK_GT(random_seed, 0)<<"seed";
     const unsigned int rng_seed = (random_seed!=0)?random_seed:caffe_rng_rand();
     rng_.reset(new Caffe::RNG(rng_seed));
   } else {

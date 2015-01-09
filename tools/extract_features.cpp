@@ -143,6 +143,7 @@ int feature_extraction_pipeline(int argc, char** argv) {
 
   LOG(ERROR)<< "Extacting Features";
 
+
   Datum datum;
   vector<shared_ptr<leveldb::WriteBatch> > feature_batches(
       num_features,

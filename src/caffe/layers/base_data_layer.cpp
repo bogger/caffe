@@ -47,6 +47,9 @@ void BaseDataLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }
   mean_ = data_mean_.cpu_data();
   data_transformer_.InitRand(this->transform_param_.random_seed());
+
+  this->phase_ = Caffe::phase();
+  this->data_transformer_.phase_ = Caffe::phase();
 }
 
 template <typename Dtype>
@@ -68,9 +71,9 @@ void BasePrefetchingDataLayer<Dtype>::LayerSetUp(
 
 template <typename Dtype>
 void BasePrefetchingDataLayer<Dtype>::CreatePrefetchThread() {
-  this->phase_ = Caffe::phase();
-  this->data_transformer_.phase_ = Caffe::phase();
-  this->data_transformer_.InitRand();
+//  this->phase_ = Caffe::phase();
+//  this->data_transformer_.phase_ = Caffe::phase();
+//  this->data_transformer_.InitRand();
   CHECK(StartInternalThread()) << "Thread execution failed";
 }
 
