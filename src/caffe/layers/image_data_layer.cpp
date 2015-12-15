@@ -25,6 +25,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
+  const int label_size = this->layer_param_.image_data_param().label_size();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
@@ -35,11 +36,22 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const string& source = this->layer_param_.image_data_param().source();
   LOG(INFO) << "Opening file " << source;
   std::ifstream infile(source.c_str());
-  string filename;
-  int label;
-  while (infile >> filename >> label) {
-    lines_.push_back(std::make_pair(filename, label));
+
+  while(true) {
+    string filename;
+    vector<float> label; // more than one label
+    infile >> filename;
+    float l;
+    if (infile.eof()) {break;}    
+    for (int i=0; i<label_size; i++) {
+      infile >> l;
+      label.push_back(l);
+      //LOG(INFO) << l;
+    }
+    lines_.push_back(std::make_pair(filename, label));    
   }
+  LOG(INFO) << "finish reading file ";
+  
 
   if (this->layer_param_.image_data_param().shuffle()) {
     // randomly shuffle data
@@ -75,7 +87,9 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
   // label
-  vector<int> label_shape(1, batch_size);
+  vector<int> label_shape(2,0);
+  label_shape[0] = batch_size;
+  label_shape[1] = label_size;
   top[1]->Reshape(label_shape);
   this->prefetch_label_.Reshape(label_shape);
 }
@@ -101,6 +115,7 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
   const int new_width = image_data_param.new_width();
+  const int label_size = image_data_param.label_size();
   const bool is_color = image_data_param.is_color();
   string root_folder = image_data_param.root_folder();
 
@@ -134,8 +149,10 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
     this->transformed_data_.set_cpu_data(prefetch_data + offset);
     this->data_transformer_->Transform(cv_img, &(this->transformed_data_));
     trans_time += timer.MicroSeconds();
-
-    prefetch_label[item_id] = lines_[lines_id_].second;
+    vector<float> & labels = lines_[lines_id_].second;
+    for (int i=0; i<label_size; i++) {
+      prefetch_label[label_size * item_id + i] = labels[i];
+    }
     // go to the next iter
     lines_id_++;
     if (lines_id_ >= lines_size) {

@@ -558,6 +558,23 @@ class MultinomialLogisticLossLayer : public LossLayer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 };
 
+template <typename Dtype>
+class SoftLogisticLossLayer : public LossLayer<Dtype> {
+ public:
+  explicit SoftLogisticLossLayer(const LayerParameter& param)
+      : LossLayer<Dtype>(param) {}
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline const char* type() const { return "SoftLogisticLoss"; }
+
+ protected:
+  /// @copydoc MultinomialLogisticLossLayer
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+    virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+};
 /**
  * @brief Computes the cross-entropy (logistic) loss @f$
  *          E = \frac{-1}{n} \sum\limits_{n=1}^N \left[

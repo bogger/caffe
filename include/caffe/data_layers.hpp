@@ -304,7 +304,7 @@ protected:
 	}
 #endif
 
-	vector<std::pair<std::string, int> > lines_;
+	vector<std::pair<std::string, vector<float> > > lines_;
 	int lines_id_;
 };
 
