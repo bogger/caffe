@@ -123,7 +123,8 @@ int feature_extraction_pipeline(int argc, char** argv) {
   std::vector<shared_ptr<db::DB> > feature_dbs;
   std::vector<shared_ptr<db::Transaction> > txns;
   const char* db_type = argv[++arg_pos];
-  for (size_t i = 0; i < num_features; ++i) {
+  LOG(INFO)<<"Data type is "<< db_type;
+  for (size_t i = 0; i < num_features; ++i)  {
     LOG(INFO)<< "Opening dataset " << dataset_names[i];
     shared_ptr<db::DB> db(db::GetDB(db_type));
     db->Open(dataset_names.at(i), db::NEW);
