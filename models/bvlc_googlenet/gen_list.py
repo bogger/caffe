@@ -1,7 +1,7 @@
 import os
 import glob
 im_dir = '/media/researchshare/linjie/data/snapchat/images/'
-out_dir = '/media/researchshare/linjie/data/snapchat/features/cnn/'
+#out_dir = '/media/researchshare/linjie/data/snapchat/features/cnn_resize/'
 fds = os.listdir(im_dir)
 #out_dir = 'output/c3d/'
 sav_name='snapchat_list_frm.txt'

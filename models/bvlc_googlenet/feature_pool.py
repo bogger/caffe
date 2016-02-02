@@ -2,18 +2,20 @@ import cPickle
 import os
 import numpy as np
 list_name ='snapchat_list_frm.txt'
-feat_name='/media/researchshare/linjie/data/snapchat/features/googlenet.bin'
+feat_name='/media/researchshare/linjie/data/snapchat/features/googlenet_resize.bin'
 with open(feat_name, 'rb') as fb:
 	feats_all = cPickle.load(fb)
 	print feats_all.shape
 fd_pre=''
 feat_dim=1024
+pool_type='max'
 im_dir = '/media/researchshare/linjie/data/snapchat/images/'
 feat_dir = '/media/researchshare/linjie/data/snapchat/features/c3d/'
 fds = os.listdir(feat_dir)
 vid_n = len(fds)
 agg_feats=np.zeros((vid_n,feat_dim), dtype=np.float32)
 feats = np.zeros((1,feat_dim),dtype=np.float32)
+#id_pre=0
 with open(list_name, 'r') as f:
 	c=0
 	for i, line in enumerate(f):
@@ -42,7 +44,7 @@ import shutil
 top_n =5
 sample_r = 100
 src_dir = '/media/researchshare/linjie/data/snapchat/video/'
-sav_dir = '/media/researchshare/linjie/data/snapchat/similar_googlenet/'
+sav_dir = '/media/researchshare/linjie/data/snapchat/similar_googlenet_resize/'
 similar = np.zeros((vid_n, top_n), dtype=np.int32)
 for i in xrange(vid_n):
 	dist = np.linalg.norm(agg_feats - agg_feats[i,:], axis=1)

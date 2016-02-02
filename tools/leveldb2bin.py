@@ -38,7 +38,7 @@ def main(argv):
 
 	# print 'time 1: %f' %(time.time() - start)
 	with open(sys.argv[2],'wb') as fb:
-		cPickle.dump(ft, fb, protocol=cPickle.HIGHEST_PROTOCOL)
+		cPickle.dump(ft, fb)
 	print 'time 2: %f' %(time.time() - start)
 	print 'done!'
 
